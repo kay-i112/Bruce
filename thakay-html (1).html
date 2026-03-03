@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tha Kay Production</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--black:#0F0F0F;--dark:#1A1A1A;--orange:#F97316;--red:#7F1D1D;--soft:#F3F4F6;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--soft);font-family:'Inter',sans-serif;overflow-x:hidden;}
+  ::selection{background:var(--orange);color:#000;}
+  ::-webkit-scrollbar{width:4px;}
+  ::-webkit-scrollbar-track{background:var(--black);}
+  ::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px;}
+
+  #grain{pointer-events:none;position:fixed;inset:0;z-index:999;opacity:.045;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:180px 180px;animation:grain .5s steps(1) infinite;}
+  @keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-2%,-3%)}20%{transform:translate(3%,2%)}30%{transform:translate(-1%,4%)}40%{transform:translate(2%,-1%)}50%{transform:translate(-3%,3%)}60%{transform:translate(1%,-2%)}70%{transform:translate(-2%,1%)}80%{transform:translate(3%,-3%)}90%{transform:translate(-1%,2%)}}
+
+  nav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(15,15,15,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05);height:64px;display:flex;align-items:center;}
+  .nav-inner{max-width:1280px;margin:0 auto;padding:0 24px;width:100%;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.2rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--soft);}
+  .logo span{color:var(--orange);}
+  .nav-links{display:flex;gap:24px;list-style:none;}
+  .nav-links a{color:rgba(243,244,246,.5);font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;font-weight:500;text-decoration:none;transition:color .3s;}
+  .nav-links a:hover{color:var(--orange);}
+  .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+  .burger span{display:block;width:24px;height:2px;background:var(--soft);transition:all .3s;}
+  .mobile-menu{display:none;position:fixed;top:64px;left:0;width:100%;background:var(--dark);border-top:1px solid rgba(255,255,255,.05);z-index:99;padding:16px 24px;flex-direction:column;gap:16px;}
+  .mobile-menu a{color:rgba(243,244,246,.6);font-size:.8rem;text-transform:uppercase;letter-spacing:.2em;text-decoration:none;transition:color .3s;}
+  .mobile-menu a:hover{color:var(--orange);}
+  .mobile-menu.open{display:flex;}
+
+  .page{display:none;min-height:100vh;padding-top:64px;}
+  .page.active{display:block;}
+
+  /* HERO */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--black);}
+  .hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:rgba(249,115,22,.05);filter:blur(120px);}
+  .hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,#0F0F0F 100%);z-index:1;}
+  .hero-scanlines{position:absolute;inset:0;z-index:1;opacity:.03;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,#fff 2px,#fff 3px);background-size:100% 3px;}
+  .hero-content{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:900px;animation:fadeup 1.2s ease forwards;}
+  @keyframes fadeup{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  .hero-eyebrow{color:var(--orange);font-size:.7rem;text-transform:uppercase;letter-spacing:.5em;font-weight:500;margin-bottom:24px;}
+  .hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,10vw,7rem);font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:24px;}
+  .hero-title .accent{color:var(--orange);}
+  .hero-sub{color:rgba(243,244,246,.5);font-size:1.1rem;max-width:520px;margin:0 auto 40px;line-height:1.7;}
+  .btn-group{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+  .btn-primary{background:var(--orange);color:#000;font-weight:600;text-transform:uppercase;letter-spacing:.15em;font-size:.75rem;padding:16px 36px;border:none;cursor:pointer;transition:background .3s;text-decoration:none;display:inline-block;}
+  .btn-primary:hover{background:rgba(249,115,22,.8);}
+  .btn-outline{border:1px solid rgba(243,244,246,.2);color:var(--soft);background:transparent;font-weight:500;text-transform:uppercase;letter-spacing:.15em;font-size:.75rem;padding:16px 36px;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-block;}
+  .btn-outline:hover{border-color:var(--orange);color:var(--orange);}
+  .scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(243,244,246,.2);}
+  .scroll-indicator span{font-size:.6rem;text-transform:uppercase;letter-spacing:.3em;}
+  .scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(249,115,22,.6),transparent);}
+
+  section{padding:96px 24px;}
+  .section-inner{max-width:1280px;margin:0 auto;}
+  .section-bg{background:var(--dark);}
+
+  .sec-head{text-align:center;margin-bottom:56px;}
+  .sec-label{color:var(--orange);font-size:.65rem;text-transform:uppercase;letter-spacing:.35em;font-weight:500;margin-bottom:12px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;}
+  .sec-sub{color:rgba(243,244,246,.45);font-size:.95rem;max-width:480px;margin:16px auto 0;line-height:1.7;}
+  .sec-bar{width:48px;height:2px;background:var(--orange);margin:20px auto 0;}
+
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+  @media(max-width:900px){.grid-3{grid-template-columns:repeat(2,1fr);}.grid-2{grid-template-columns:1fr;}}
+  @media(max-width:600px){.grid-3,.grid-2{grid-template-columns:1fr;}}
+
+  /* PROJECT CARD */
+  .project-card{background:var(--dark);border:1px solid rgba(255,255,255,.05);overflow:hidden;cursor:pointer;transition:border-color .4s;}
+  .project-card:hover{border-color:rgba(249,115,22,.4);}
+  .card-img{position:relative;height:220px;background:var(--black);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+  .project-card:hover .card-img img{transform:scale(1.05);}
+  .card-img-placeholder{font-family:'Playfair Display',serif;font-size:4rem;font-weight:900;color:rgba(255,255,255,.06);}
+  .card-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--dark),transparent);}
+  .card-badge{position:absolute;top:12px;left:12px;background:var(--orange);color:#000;font-size:.6rem;text-transform:uppercase;letter-spacing:.15em;font-weight:700;padding:3px 8px;}
+  .card-body{padding:20px;}
+  .card-role{color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.2em;margin-bottom:6px;}
+  .card-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+  .card-desc{color:rgba(243,244,246,.45);font-size:.82rem;line-height:1.6;}
+
+  /* SERVICE CARD */
+  .service-card{background:var(--dark);border:1px solid rgba(255,255,255,.05);padding:32px;transition:all .4s;}
+  .service-card:hover{border-color:rgba(249,115,22,.4);background:var(--black);}
+  .service-icon{font-size:2rem;margin-bottom:16px;}
+  .service-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:12px;transition:color .3s;}
+  .service-card:hover .service-title{color:var(--orange);}
+  .service-desc{color:rgba(243,244,246,.45);font-size:.82rem;line-height:1.7;}
+
+  /* SHORT FILM CARD */
+  .film-card{background:var(--dark);border:1px solid rgba(255,255,255,.05);overflow:hidden;transition:border-color .4s;cursor:pointer;}
+  .film-card:hover{border-color:rgba(249,115,22,.4);}
+  .film-thumb{position:relative;height:260px;background:var(--black);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .film-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+  .film-card:hover .film-thumb img{transform:scale(1.05);}
+  .film-thumb-placeholder{font-family:'Playfair Display',serif;font-size:3.5rem;font-weight:900;color:rgba(255,255,255,.05);}
+  .film-play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:56px;height:56px;border-radius:50%;
+    background:rgba(249,115,22,.9);display:flex;align-items:center;justify-content:center;
+    transition:all .3s;z-index:2;
+  }
+  .film-card:hover .film-play{background:var(--orange);transform:translate(-50%,-50%) scale(1.1);}
+  .film-play svg{width:20px;height:20px;fill:#000;margin-left:3px;}
+  .film-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--dark) 0%,rgba(0,0,0,.3) 60%,transparent 100%);}
+  .film-duration{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.7);color:var(--soft);font-size:.65rem;padding:3px 8px;letter-spacing:.1em;}
+  .film-year{position:absolute;top:12px;right:12px;background:var(--orange);color:#000;font-size:.6rem;font-weight:700;padding:3px 8px;letter-spacing:.1em;}
+  .film-body{padding:20px 24px 24px;}
+  .film-genre{color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.25em;margin-bottom:6px;}
+  .film-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+  .film-desc{color:rgba(243,244,246,.45);font-size:.82rem;line-height:1.6;margin-bottom:14px;}
+  .film-meta{display:flex;gap:16px;flex-wrap:wrap;}
+  .film-meta span{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(243,244,246,.3);}
+  .film-meta span strong{color:rgba(243,244,246,.6);font-weight:500;}
+
+  /* BTS CARD */
+  .bts-card{background:var(--dark);border:1px solid rgba(255,255,255,.05);overflow:hidden;transition:border-color .4s;cursor:pointer;}
+  .bts-card:hover{border-color:rgba(249,115,22,.4);}
+  .bts-img{position:relative;height:240px;background:var(--black);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .bts-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s;}
+  .bts-card:hover .bts-img img{transform:scale(1.06);}
+  .bts-img-placeholder{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:rgba(255,255,255,.05);}
+  .bts-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--dark),rgba(0,0,0,.2) 60%,transparent);}
+  .bts-tag{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);border:1px solid rgba(249,115,22,.4);color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.15em;padding:3px 10px;}
+  .bts-body{padding:18px 20px 22px;}
+  .bts-project{color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.25em;margin-bottom:5px;}
+  .bts-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:7px;}
+  .bts-desc{color:rgba(243,244,246,.4);font-size:.8rem;line-height:1.6;}
+
+  /* BTS FEATURED STRIP */
+  .bts-strip{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:4px;margin-bottom:48px;}
+  .bts-strip-item{position:relative;overflow:hidden;cursor:pointer;background:var(--dark);}
+  .bts-strip-item:first-child{grid-row:span 2;}
+  .bts-strip-item .strip-img{width:100%;height:100%;min-height:200px;background:var(--black);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .bts-strip-item .strip-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+  .bts-strip-item:hover .strip-img img{transform:scale(1.06);}
+  .strip-placeholder{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:rgba(255,255,255,.04);}
+  .strip-caption{position:absolute;bottom:0;left:0;right:0;padding:12px 14px;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(243,244,246,.6);}
+
+  /* CTA */
+  .cta-banner{position:relative;padding:112px 24px;text-align:center;background:var(--black);overflow:hidden;}
+  .cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,#F97316 0%,transparent 70%);opacity:.04;}
+  .cta-label{color:var(--orange);font-size:.65rem;text-transform:uppercase;letter-spacing:.4em;margin-bottom:16px;}
+  .cta-title{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;margin-bottom:32px;line-height:1.1;}
+
+  /* ABOUT */
+  .about-header{position:relative;padding:112px 24px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);overflow:hidden;}
+  .about-glow{position:absolute;inset:0;background:radial-gradient(ellipse at top,#F97316 0%,transparent 60%);opacity:.04;}
+  .about-blocks{max-width:720px;margin:0 auto;padding:80px 24px;display:flex;flex-direction:column;gap:40px;}
+  .about-block{border-left:2px solid var(--orange);padding-left:24px;}
+  .about-block-label{color:var(--orange);font-size:.65rem;text-transform:uppercase;letter-spacing:.25em;margin-bottom:8px;}
+  .about-block-text{color:rgba(243,244,246,.65);line-height:1.8;font-size:.95rem;}
+
+  /* CONTACT */
+  .contact-wrap{max-width:640px;margin:0 auto;padding:80px 24px;}
+  .contact-head{text-align:center;margin-bottom:56px;}
+  .contact-sub{color:rgba(243,244,246,.35);font-size:.8rem;margin-top:12px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  @media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+  .form-input{width:100%;background:var(--dark);border:1px solid rgba(255,255,255,.1);color:var(--soft);padding:14px 16px;font-size:.85rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .3s;}
+  .form-input:focus{border-color:var(--orange);}
+  .form-input::placeholder{color:rgba(243,244,246,.25);}
+  .form-group{margin-bottom:16px;}
+  textarea.form-input{resize:vertical;min-height:140px;}
+  .btn-submit{width:100%;background:var(--orange);color:#000;font-weight:600;text-transform:uppercase;letter-spacing:.15em;font-size:.75rem;padding:16px;border:none;cursor:pointer;transition:background .3s;font-family:'Inter',sans-serif;margin-top:4px;}
+  .btn-submit:hover{background:rgba(249,115,22,.8);}
+  .success-msg{text-align:center;padding:64px 32px;border:1px solid rgba(249,115,22,.2);background:var(--dark);}
+  .success-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--orange);margin-bottom:8px;}
+  .success-sub{color:rgba(243,244,246,.4);font-size:.85rem;}
+  .contact-info{margin-top:56px;padding-top:40px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;}
+  .contact-info-label{color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.25em;margin-bottom:6px;}
+  .contact-info a{color:rgba(243,244,246,.5);font-size:.85rem;text-decoration:none;transition:color .3s;}
+  .contact-info a:hover{color:var(--orange);}
+  .socials{display:flex;gap:20px;}
+
+  /* PAGE HEADER */
+  .page-header{position:relative;padding:80px 24px 60px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);overflow:hidden;}
+  .page-header-glow{position:absolute;inset:0;background:radial-gradient(ellipse at top,#F97316 0%,transparent 60%);opacity:.04;}
+
+  footer{background:var(--dark);border-top:1px solid rgba(255,255,255,.05);padding:40px 24px;text-align:center;}
+  .footer-logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.4rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px;}
+  .footer-logo span{color:var(--orange);}
+  .footer-tagline{color:rgba(243,244,246,.3);font-size:.65rem;text-transform:uppercase;letter-spacing:.3em;margin-bottom:20px;}
+  .footer-socials{display:flex;justify-content:center;gap:24px;margin-bottom:24px;}
+  .footer-socials a{color:rgba(243,244,246,.25);font-size:.7rem;text-transform:uppercase;letter-spacing:.2em;text-decoration:none;transition:color .3s;}
+  .footer-socials a:hover{color:var(--orange);}
+  .footer-copy{color:rgba(243,244,246,.15);font-size:.7rem;}
+
+  .center-cta{text-align:center;margin-top:48px;}
+  .btn-outline-sm{border:1px solid var(--orange);color:var(--orange);background:transparent;text-transform:uppercase;letter-spacing:.2em;font-size:.7rem;padding:12px 32px;cursor:pointer;transition:all .3s;text-decoration:none;font-family:'Inter',sans-serif;display:inline-block;}
+  .btn-outline-sm:hover{background:var(--orange);color:#000;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;padding:24px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--dark);border:1px solid rgba(255,255,255,.08);max-width:720px;width:100%;max-height:90vh;overflow-y:auto;}
+  .modal-top{position:relative;height:320px;background:var(--black);display:flex;align-items:center;justify-content:center;}
+  .modal-top-placeholder{font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;color:rgba(255,255,255,.04);}
+  .modal-close{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.6);border:none;color:var(--soft);cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:color .3s;}
+  .modal-close:hover{color:var(--orange);}
+  .modal-body{padding:28px 32px 36px;}
+  .modal-badge{display:inline-block;background:var(--orange);color:#000;font-size:.6rem;text-transform:uppercase;letter-spacing:.15em;font-weight:700;padding:3px 10px;margin-bottom:12px;}
+  .modal-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:8px;}
+  .modal-role{color:var(--orange);font-size:.65rem;text-transform:uppercase;letter-spacing:.2em;margin-bottom:16px;}
+  .modal-desc{color:rgba(243,244,246,.6);font-size:.9rem;line-height:1.8;}
+  .modal-divider{height:1px;background:rgba(255,255,255,.06);margin:20px 0;}
+  .modal-details{display:flex;gap:24px;flex-wrap:wrap;}
+  .modal-detail span{font-size:.6rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(243,244,246,.3);display:block;margin-bottom:4px;}
+  .modal-detail strong{font-size:.85rem;color:var(--soft);}
+
+  @media(max-width:768px){.nav-links{display:none;}.burger{display:flex;}section{padding:64px 20px;}.bts-strip{grid-template-columns:1fr 1fr;}.bts-strip-item:first-child{grid-row:auto;}}
+  @media(max-width:480px){.bts-strip{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#" onclick="showPage('home');return false;">TKP<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('home');return false;">Home</a></li>
+      <li><a href="#" onclick="showPage('about');return false;">About</a></li>
+      <li><a href="#" onclick="showPage('projects');return false;">Projects</a></li>
+      <li><a href="#" onclick="showPage('films');return false;">Short Films</a></li>
+      <li><a href="#" onclick="showPage('bts');return false;">Behind The Scenes</a></li>
+      <li><a href="#" onclick="showPage('services');return false;">Services</a></li>
+      <li><a href="#" onclick="showPage('contact');return false;">Contact</a></li>
+    </ul>
+    <div class="burger" onclick="toggleMenu()" id="burger">
+      <span id="b1"></span><span id="b2"></span><span id="b3"></span>
+    </div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#" onclick="showPage('home');closeMobile();return false;">Home</a>
+  <a href="#" onclick="showPage('about');closeMobile();return false;">About</a>
+  <a href="#" onclick="showPage('projects');closeMobile();return false;">Projects</a>
+  <a href="#" onclick="showPage('films');closeMobile();return false;">Short Films</a>
+  <a href="#" onclick="showPage('bts');closeMobile();return false;">Behind The Scenes</a>
+  <a href="#" onclick="showPage('services');closeMobile();return false;">Services</a>
+  <a href="#" onclick="showPage('contact');closeMobile();return false;">Contact</a>
+</div>
+
+<!-- ════════════════════════════ HOME ════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-scanlines"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Est. 2024 · Film &amp; Media Production</p>
+      <h1 class="hero-title">Visual Stories<br><span class="accent">That Move</span><br>Culture.</h1>
+      <p class="hero-sub">Creative direction, film production, and digital storytelling — crafted with intention.</p>
+      <div class="btn-group">
+        <a class="btn-primary" href="#" onclick="showPage('projects');return false;">View Projects</a>
+        <a class="btn-outline" href="#" onclick="showPage('contact');return false;">Contact Us</a>
+      </div>
+    </div>
+    <div class="scroll-indicator"><span>Scroll</span><div class="scroll-line"></div></div>
+  </div>
+
+  <!-- FEATURED PROJECTS -->
+  <section>
+    <div class="section-inner">
+      <div class="sec-head">
+        <p class="sec-label">Our Work</p>
+        <h2 class="sec-title">Featured Projects</h2>
+        <p class="sec-sub">A selection of our most recent and impactful productions.</p>
+        <div class="sec-bar"></div>
+      </div>
+      <div class="grid-3">
+        <div class="project-card" onclick="openModal('Shadows of Gold','Short Film','Director · Editor','A cinematic short exploring identity, legacy, and the price of ambition. Shot over 5 days in urban locations, this film dives deep into the psychology of a young man torn between loyalty and greatness.','2024','18 min')">
+          <div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Short Film</span></div>
+          <div class="card-body"><p class="card-role">Director · Editor</p><h3 class="card-title">SHADOWS OF GOLD</h3><p class="card-desc">A cinematic short exploring identity, legacy, and the price of ambition.</p></div>
+        </div>
+        <div class="project-card" onclick="openModal('Frequency','Music Video','Director · Cinematographer','Visual collaboration bringing an artist's sonic world to life through abstract imagery and motion. A fusion of light, shadow, and raw emotion.','2024','4 min')">
+          <div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Music Video</span></div>
+          <div class="card-body"><p class="card-role">Director · Cinematographer</p><h3 class="card-title">FREQUENCY</h3><p class="card-desc">Visual collaboration bringing an artist's sonic world to life through abstract imagery.</p></div>
+        </div>
+        <div class="project-card" onclick="openModal('The Come Up','Documentary','Producer · Director','A raw, honest look at the journey of independent creators building from zero. No filters, no shortcuts — just real stories of sacrifice and vision.','2024','32 min')">
+          <div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Documentary</span></div>
+          <div class="card-body"><p class="card-role">Producer · Director</p><h3 class="card-title">THE COME UP</h3><p class="card-desc">A raw, honest look at the journey of independent creators building from zero.</p></div>
+        </div>
+      </div>
+      <div class="center-cta"><a class="btn-outline-sm" href="#" onclick="showPage('projects');return false;">View All Projects</a></div>
+    </div>
+  </section>
+
+  <!-- SHORT FILMS PREVIEW -->
+  <section class="section-bg">
+    <div class="section-inner">
+      <div class="sec-head">
+        <p class="sec-label">Cinema</p>
+        <h2 class="sec-title">Short Films</h2>
+        <p class="sec-sub">Original cinematic stories told with purpose, craft, and intention.</p>
+        <div class="sec-bar"></div>
+      </div>
+      <div class="grid-2">
+        <div class="film-card" onclick="openFilmModal('Shadows of Gold','Drama','Director · Writer · Editor','A young man must choose between his past and his purpose. Shot on location across the city, this film explores the weight of legacy through silence, light, and restraint.','2024','18 min','Written & Directed by Tha Kay')">
+          <div class="film-thumb"><div class="film-thumb-placeholder">TKP</div><div class="film-overlay"></div><div class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="film-year">2024</span><span class="film-duration">18 min</span></div>
+          <div class="film-body"><p class="film-genre">Drama</p><h3 class="film-title">SHADOWS OF GOLD</h3><p class="film-desc">A young man must choose between his past and his purpose.</p><div class="film-meta"><span><strong>Director</strong> Tha Kay</span><span><strong>Genre</strong> Drama</span></div></div>
+        </div>
+        <div class="film-card" onclick="openFilmModal('Still Waters','Experimental','Director · Writer','A silent film experiment told entirely through visuals and ambient sound. No dialogue, no titles — just the language of image and emotion.','2024','12 min','An experimental work by Tha Kay')">
+          <div class="film-thumb"><div class="film-thumb-placeholder">TKP</div><div class="film-overlay"></div><div class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="film-year">2024</span><span class="film-duration">12 min</span></div>
+          <div class="film-body"><p class="film-genre">Experimental</p><h3 class="film-title">STILL WATERS</h3><p class="film-desc">A silent film experiment told entirely through visuals and ambient sound.</p><div class="film-meta"><span><strong>Director</strong> Tha Kay</span><span><strong>Genre</strong> Experimental</span></div></div>
+        </div>
+      </div>
+      <div class="center-cta"><a class="btn-outline-sm" href="#" onclick="showPage('films');return false;">All Short Films</a></div>
+    </div>
+  </section>
+
+  <!-- BTS PREVIEW -->
+  <section>
+    <div class="section-inner">
+      <div class="sec-head">
+        <p class="sec-label">On Set</p>
+        <h2 class="sec-title">Behind The Scenes</h2>
+        <p class="sec-sub">A raw look at the craft, the process, and the people behind the lens.</p>
+        <div class="sec-bar"></div>
+      </div>
+      <div class="bts-strip">
+        <div class="bts-strip-item"><div class="strip-img"><div class="strip-placeholder">TKP</div></div><div class="strip-caption">Shadows of Gold — Day 1</div></div>
+        <div class="bts-strip-item"><div class="strip-img"><div class="strip-placeholder">TKP</div></div><div class="strip-caption">Lighting Setup</div></div>
+        <div class="bts-strip-item"><div class="strip-img"><div class="strip-placeholder">TKP</div></div><div class="strip-caption">On Location</div></div>
+        <div class="bts-strip-item"><div class="strip-img"><div class="strip-placeholder">TKP</div></div><div class="strip-caption">Director's Cut</div></div>
+        <div class="bts-strip-item"><div class="strip-img"><div class="strip-placeholder">TKP</div></div><div class="strip-caption">Camera Crew</div></div>
+      </div>
+      <div class="center-cta"><a class="btn-outline-sm" href="#" onclick="showPage('bts');return false;">View All BTS</a></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-banner">
+    <div class="cta-glow"></div>
+    <p class="cta-label">Ready to Create?</p>
+    <h2 class="cta-title">Let's Build Something<br>Unforgettable.</h2>
+    <a class="btn-primary" href="#" onclick="showPage('contact');return false;">Start a Project</a>
+  </div>
+</div>
+
+<!-- ════════════════════════════ ABOUT ════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="about-header">
+    <div class="about-glow"></div>
+    <p class="sec-label" style="position:relative;z-index:1;">Our Story</p>
+    <h1 class="sec-title" style="position:relative;z-index:1;font-size:clamp(3rem,8vw,5.5rem);">Who Is<br><span style="color:var(--orange)">Tha Kay?</span></h1>
+  </div>
+  <div class="about-blocks">
+    <div class="about-block"><p class="about-block-label">The Brand</p><p class="about-block-text">Tha Kay Production is a modern film and media production studio built on the belief that storytelling is the most powerful force in culture. We exist at the intersection of art, vision, and execution — creating content that doesn't just entertain, but moves people.</p></div>
+    <div class="about-block"><p class="about-block-label">The Vision</p><p class="about-block-text">To be the production house that defines the visual language of a generation. We work with artists, brands, and visionaries who refuse to settle for ordinary. Every frame we create carries intention. Every project leaves a mark.</p></div>
+    <div class="about-block"><p class="about-block-label">Creative Philosophy</p><p class="about-block-text">We believe in the power of restraint as much as spectacle. In silence as much as sound. In the story beneath the story. Our process is collaborative, cinematic, and deeply human — because the best productions come from real connection.</p></div>
+    <div class="about-block"><p class="about-block-label">Mission</p><p class="about-block-text">To produce visual stories that challenge, inspire, and outlast trends. We are not here to follow the industry — we are here to shape it.</p></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PROJECTS ════════════════════════════ -->
+<div class="page" id="page-projects">
+  <section>
+    <div class="section-inner">
+      <div class="sec-head">
+        <p class="sec-label">Our Work</p>
+        <h2 class="sec-title">Projects</h2>
+        <p class="sec-sub">Every production is a statement. Here's what we've said so far.</p>
+        <div class="sec-bar"></div>
+      </div>
+      <div class="grid-3">
+        <div class="project-card" onclick="openModal('Shadows of Gold','Short Film','Director · Editor','A cinematic short exploring identity, legacy, and the price of ambition. Shot over 5 days in urban locations.','2024','18 min')"><div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Short Film</span></div><div class="card-body"><p class="card-role">Director · Editor</p><h3 class="card-title">SHADOWS OF GOLD</h3><p class="card-desc">A cinematic short exploring identity, legacy, and the price of ambition.</p></div></div>
+        <div class="project-card" onclick="openModal('Frequency','Music Video','Director · Cinematographer','Visual collaboration bringing an artist's sonic world to life through abstract imagery and motion.','2024','4 min')"><div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Music Video</span></div><div class="card-body"><p class="card-role">Director · Cinematographer</p><h3 class="card-title">FREQUENCY</h3><p class="card-desc">Visual collaboration bringing an artist's sonic world to life through abstract imagery.</p></div></div>
+        <div class="project-card" onclick="openModal('The Come Up','Documentary','Producer · Director','A raw, honest look at the journey of independent creators building from zero. No filters, no shortcuts.','2024','32 min')"><div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Documentary</span></div><div class="card-body"><p class="card-role">Producer · Director</p><h3 class="card-title">THE COME UP</h3><p class="card-desc">A raw, honest look at the journey of independent creators building from zero.</p></div></div>
+        <div class="project-card" onclick="openModal('Neon Saints','Commercial','Creative Director','Brand campaign for an urban clothing line — moody, bold, unapologetic. 3-day shoot across rooftops and underground spaces.','2024','—')"><div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Commercial</span></div><div class="card-body"><p class="card-role">Creative Director</p><h3 class="card-title">NEON SAINTS</h3><p class="card-desc">Brand campaign for an urban clothing line — moody, bold, unapologetic.</p></div></div>
+        <div class="project-card" onclick="openModal('Still Waters','Short Film','Director · Writer','A silent film experiment told entirely through visuals and ambient sound. No dialogue, no titles.','2024','12 min')"><div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Short Film</span></div><div class="card-body"><p class="card-role">Director · Writer</p><h3 class="card-title">STILL WATERS</h3><p class="card-desc">A silent film experiment told entirely through visuals and ambient sound.</p></div></div>
+        <div class="project-card" onclick="openModal('Ascend','Music Video','Director','High-concept visual narrative pairing movement with architecture across three cities.','2024','5 min')"><div class="card-img"><div class="card-img-placeholder">TKP</div><div class="card-img-overlay"></div><span class="card-badge">Music Video</span></div><div class="card-body"><p class="card-role">Director</p><h3 class="card-title">ASCEND</h3><p class="card-desc">High-concept visual narrative pairing movement with architecture.</p></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════ SHORT FILMS ════════════════════════════ -->
+<div class="page" id="page-films">
+  <div class="page-header">
+    <div class="page-header-glow"></div>
+    <p class="sec-label" style="position:relative;z-index:1;">Cinema</p>
+    <h1 class="sec-title" style="position:relative;z-index:1;font-size:clamp(2.5rem,7vw,5rem);">Short <span style="color:var(--orange)">Films</span></h1>
+    <p class="sec-sub" style="position:relative;z-index:1;">Original stories. Uncompromising vision. Every frame deliberate.</p>
+  </div>
+  <section>
+    <div class="section-inner">
+      <div class="grid-2">
+        <div class="film-card" onclick="openFilmModal('Shadows of Gold','Drama','Director · Writer · Editor','A young man must choose between his past and his purpose. Shot on location across the city, this film explores the weight of legacy through silence, light, and restraint. Every scene was designed to feel like a memory — fading at the edges, burning at the center.','2024','18 min','Written & Directed by Tha Kay')">
+          <div class="film-thumb"><div class="film-thumb-placeholder">TKP</div><div class="film-overlay"></div><div class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="film-year">2024</span><span class="film-duration">18 min</span></div>
+          <div class="film-body"><p class="film-genre">Drama</p><h3 class="film-title">SHADOWS OF GOLD</h3><p class="film-desc">A young man must choose between his past and his purpose in a city that never forgives.</p><div class="film-meta"><span><strong>Director</strong> Tha Kay</span><span><strong>Year</strong> 2024</span><span><strong>Runtime</strong> 18 min</span></div></div>
+        </div>
+        <div class="film-card" onclick="openFilmModal('Still Waters','Experimental','Director · Writer','A silent film experiment told entirely through visuals and ambient sound. No dialogue, no titles — just the language of image and emotion. Inspired by the early works of Tarkovsky and Wong Kar-wai.','2024','12 min','An experimental work by Tha Kay')">
+          <div class="film-thumb"><div class="film-thumb-placeholder">TKP</div><div class="film-overlay"></div><div class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="film-year">2024</span><span class="film-duration">12 min</span></div>
+          <div class="film-body"><p class="film-genre">Experimental</p><h3 class="film-title">STILL WATERS</h3><p class="film-desc">A silent film experiment told entirely through visuals and ambient sound.</p><div class="film-meta"><span><strong>Director</strong> Tha Kay</span><span><strong>Year</strong> 2024</span><span><strong>Runtime</strong> 12 min</span></div></div>
+        </div>
+        <div class="film-card" onclick="openFilmModal('The Come Up','Documentary','Producer · Director','A raw, honest look at the journey of independent creators building from zero. Featuring real stories of sacrifice, late nights, and the unrelenting pursuit of a vision that the world hasn't seen yet.','2024','32 min','Produced & Directed by Tha Kay')">
+          <div class="film-thumb"><div class="film-thumb-placeholder">TKP</div><div class="film-overlay"></div><div class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="film-year">2024</span><span class="film-duration">32 min</span></div>
+          <div class="film-body"><p class="film-genre">Documentary</p><h3 class="film-title">THE COME UP</h3><p class="film-desc">A raw documentary following independent creators building something real from nothing.</p><div class="film-meta"><span><strong>Director</strong> Tha Kay</span><span><strong>Year</strong> 2024</span><span><strong>Runtime</strong> 32 min</span></div></div>
+        </div>
+        <div class="film-card" onclick="openFilmModal('Meridian','Thriller','Director · Editor','A man wakes up in a city he doesn't recognize. A psychological thriller told in real time, shot in one continuous location over a single night. Tension built through sound design and close-up cinematography.','2024','22 min','Written & Directed by Tha Kay')">
+          <div class="film-thumb"><div class="film-thumb-placeholder">TKP</div><div class="film-overlay"></div><div class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="film-year">2024</span><span class="film-duration">22 min</span></div>
+          <div class="film-body"><p class="film-genre">Thriller</p><h3 class="film-title">MERIDIAN</h3><p class="film-desc">A psychological thriller told in real time — one location, one night, no escape.</p><div class="film-meta"><span><strong>Director</strong> Tha Kay</span><span><strong>Year</strong> 2024</span><span><strong>Runtime</strong> 22 min</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════ BEHIND THE SCENES ════════════════════════════ -->
+<div class="page" id="page-bts">
+  <div class="page-header">
+    <div class="page-header-glow"></div>
+    <p class="sec-label" style="position:relative;z-index:1;">On Set</p>
+    <h1 class="sec-title" style="position:relative;z-index:1;font-size:clamp(2.5rem,7vw,5rem);">Behind <span style="color:var(--orange)">The Scenes</span></h1>
+    <p class="sec-sub" style="position:relative;z-index:1;">The raw reality of bringing a vision to life — the crew, the craft, the chaos.</p>
+  </div>
+  <section>
+    <div class="section-inner">
+
+      <!-- PROJECT: Shadows of Gold -->
+      <div style="margin-bottom:64px;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);">
+          <div style="width:3px;height:40px;background:var(--orange);flex-shrink:0;"></div>
+          <div>
+            <p style="color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.3em;margin-bottom:3px;">Short Film · 2024</p>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;">SHADOWS OF GOLD</h3>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Day 1</span></div><div class="bts-body"><p class="bts-project">Shadows of Gold</p><h4 class="bts-title">Location Scout</h4><p class="bts-desc">Finding the perfect urban backdrop — rooftops, alleyways, and forgotten corners of the city.</p></div></div>
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Day 2</span></div><div class="bts-body"><p class="bts-project">Shadows of Gold</p><h4 class="bts-title">Lighting Rig Setup</h4><p class="bts-desc">Building the dramatic low-key lighting that defines the film's visual identity.</p></div></div>
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Day 3</span></div><div class="bts-body"><p class="bts-project">Shadows of Gold</p><h4 class="bts-title">Director on Set</h4><p class="bts-desc">Tha Kay working closely with the cast to pull out authentic, grounded performances.</p></div></div>
+        </div>
+      </div>
+
+      <!-- PROJECT: Still Waters -->
+      <div style="margin-bottom:64px;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);">
+          <div style="width:3px;height:40px;background:var(--orange);flex-shrink:0;"></div>
+          <div>
+            <p style="color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.3em;margin-bottom:3px;">Experimental · 2024</p>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;">STILL WATERS</h3>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Pre-Prod</span></div><div class="bts-body"><p class="bts-project">Still Waters</p><h4 class="bts-title">Storyboard Session</h4><p class="bts-desc">Every shot mapped out frame by frame — this film lives and dies by its visual planning.</p></div></div>
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Shoot</span></div><div class="bts-body"><p class="bts-project">Still Waters</p><h4 class="bts-title">Handheld Work</h4><p class="bts-desc">Intimate, close-to-the-ground camera movement to create that disoriented, dreamlike feel.</p></div></div>
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Post</span></div><div class="bts-body"><p class="bts-project">Still Waters</p><h4 class="bts-title">Color Grade</h4><p class="bts-desc">Desaturated tones with isolated orange and amber touches — cold world, warm memory.</p></div></div>
+        </div>
+      </div>
+
+      <!-- PROJECT: Music Videos -->
+      <div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);">
+          <div style="width:3px;height:40px;background:var(--orange);flex-shrink:0;"></div>
+          <div>
+            <p style="color:var(--orange);font-size:.6rem;text-transform:uppercase;letter-spacing:.3em;margin-bottom:3px;">Music Videos · 2024</p>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;">FREQUENCY &amp; ASCEND</h3>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Frequency</span></div><div class="bts-body"><p class="bts-project">Frequency</p><h4 class="bts-title">Studio Session</h4><p class="bts-desc">Working with the artist to translate the emotional core of the track into a visual concept.</p></div></div>
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Frequency</span></div><div class="bts-body"><p class="bts-project">Frequency</p><h4 class="bts-title">Neon Light Setup</h4><p class="bts-desc">Custom light painting and practical effects — no VFX, all practical on-camera magic.</p></div></div>
+          <div class="bts-card"><div class="bts-img"><div class="bts-img-placeholder">TKP</div><div class="bts-overlay"></div><span class="bts-tag">Ascend</span></div><div class="bts-body"><p class="bts-project">Ascend</p><h4 class="bts-title">Rooftop Shoot</h4><p class="bts-desc">Golden hour on the rooftop — the shot that made the whole video worth making.</p></div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════ SERVICES ════════════════════════════ -->
+<div class="page" id="page-services">
+  <section>
+    <div class="section-inner">
+      <div class="sec-head">
+        <p class="sec-label">What We Offer</p>
+        <h2 class="sec-title">Services</h2>
+        <p class="sec-sub">Built for creators, brands, and visionaries who demand more than average.</p>
+        <div class="sec-bar"></div>
+      </div>
+      <div class="grid-3">
+        <div class="service-card"><div class="service-icon">🎬</div><h3 class="service-title">Film Production</h3><p class="service-desc">From pre-production planning to final delivery, we handle every stage of the filmmaking process with precision and creative vision.</p></div>
+        <div class="service-card"><div class="service-icon">🎵</div><h3 class="service-title">Music Video Direction</h3><p class="service-desc">We collaborate closely with artists to translate sound into visuals — creating music videos that amplify the story and elevate the brand.</p></div>
+        <div class="service-card"><div class="service-icon">✂️</div><h3 class="service-title">Editing & Post-Production</h3><p class="service-desc">Professional color grading, sound design, visual effects, and motion graphics that bring your raw footage to life.</p></div>
+        <div class="service-card"><div class="service-icon">🎨</div><h3 class="service-title">Creative Direction</h3><p class="service-desc">Strategic creative leadership for campaigns, shoots, and content rollouts — ensuring every visual choice serves the bigger story.</p></div>
+        <div class="service-card"><div class="service-icon">📱</div><h3 class="service-title">Branding Content Creation</h3><p class="service-desc">Short-form and long-form content crafted for brands that want to communicate with power, clarity, and cultural relevance.</p></div>
+        <div class="service-card"><div class="service-icon">📸</div><h3 class="service-title">Photography</h3><p class="service-desc">Editorial and commercial photography with a cinematic eye — stills that carry the weight of a motion picture.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════ CONTACT ════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-wrap">
+    <div class="contact-head">
+      <p class="sec-label">Work With Us</p>
+      <h1 class="sec-title">Let's Create Something<br><span style="color:var(--orange)">Powerful.</span></h1>
+      <p class="contact-sub">Tell us about your vision — we'll handle the rest.</p>
+    </div>
+    <div id="contactForm">
+      <div class="form-grid">
+        <input class="form-input" id="fname" type="text" placeholder="Your Name"/>
+        <input class="form-input" id="femail" type="email" placeholder="Your Email"/>
+      </div>
+      <div class="form-group">
+        <select class="form-input" id="ftype">
+          <option value="">Project Type</option>
+          <option>Film Production</option>
+          <option>Music Video</option>
+          <option>Documentary</option>
+          <option>Short Film</option>
+          <option>Commercial / Brand</option>
+          <option>Photography</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><textarea class="form-input" id="fmsg" placeholder="Tell us about your project..."></textarea></div>
+      <button class="btn-submit" onclick="submitForm()">Send Message</button>
+    </div>
+    <div id="successMsg" style="display:none;" class="success-msg">
+      <p class="success-title">Message Received.</p>
+      <p class="success-sub">We'll be in touch within 24–48 hours.</p>
+    </div>
+    <div class="contact-info">
+      <div><p class="contact-info-label">Email</p><a href="mailto:hello@thakayproduction.com">hello@thakayproduction.com</a></div>
+      <div><p class="contact-info-label">Socials</p><div class="socials"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Twitter/X</a></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ FOOTER ════════════════════════════ -->
+<footer>
+  <p class="footer-logo">Tha Kay Production<span>.</span></p>
+  <p class="footer-tagline">Visual Stories That Move Culture</p>
+  <div class="footer-socials">
+    <a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Twitter / X</a>
+  </div>
+  <p class="footer-copy">© <span id="yr"></span> Tha Kay Production. All rights reserved.</p>
+</footer>
+
+<!-- ════════════════════════════ MODALS ════════════════════════════ -->
+<!-- Project Modal -->
+<div class="modal-overlay" id="projectModal" onclick="closeModal('projectModal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-top"><div class="modal-top-placeholder">TKP</div><button class="modal-close" onclick="closeModal('projectModal')">✕</button></div>
+    <div class="modal-body">
+      <span class="modal-badge" id="m-badge"></span>
+      <h2 class="modal-title" id="m-title"></h2>
+      <p class="modal-role" id="m-role"></p>
+      <p class="modal-desc" id="m-desc"></p>
+      <div class="modal-divider"></div>
+      <div class="modal-details">
+        <div class="modal-detail"><span>Year</span><strong id="m-year"></strong></div>
+        <div class="modal-detail"><span>Runtime</span><strong id="m-runtime"></strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Film Modal -->
+<div class="modal-overlay" id="filmModal" onclick="closeModal('filmModal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-top" style="background:#000;flex-direction:column;gap:12px;">
+      <div class="modal-top-placeholder" style="font-size:3rem;">▶</div>
+      <p style="color:rgba(243,244,246,.3);font-size:.7rem;text-transform:uppercase;letter-spacing:.2em;">Add your video embed here</p>
+      <button class="modal-close" onclick="closeModal('filmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <span class="modal-badge" id="fm-genre"></span>
+      <h2 class="modal-title" id="fm-title"></h2>
+      <p class="modal-role" id="fm-role"></p>
+      <p class="modal-desc" id="fm-desc"></p>
+      <div class="modal-divider"></div>
+      <div class="modal-details">
+        <div class="modal-detail"><span>Year</span><strong id="fm-year"></strong></div>
+        <div class="modal-detail"><span>Runtime</span><strong id="fm-runtime"></strong></div>
+        <div class="modal-detail"><span>Credit</span><strong id="fm-credit"></strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  function showPage(p) {
+    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-' + p).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  let menuOpen = false;
+  function toggleMenu() {
+    menuOpen = !menuOpen;
+    document.getElementById('mobileMenu').classList.toggle('open', menuOpen);
+    const b1=document.getElementById('b1'),b2=document.getElementById('b2'),b3=document.getElementById('b3');
+    if(menuOpen){b1.style.transform='rotate(45deg) translate(5px,5px)';b2.style.opacity='0';b3.style.transform='rotate(-45deg) translate(5px,-5px)';}
+    else{b1.style.transform='';b2.style.opacity='';b3.style.transform='';}
+  }
+  function closeMobile(){menuOpen=false;document.getElementById('mobileMenu').classList.remove('open');document.getElementById('b1').style.transform='';document.getElementById('b2').style.opacity='';document.getElementById('b3').style.transform='';}
+
+  function submitForm() {
+    const n=document.getElementById('fname').value.trim();
+    const e=document.getElementById('femail').value.trim();
+    const t=document.getElementById('ftype').value;
+    const m=document.getElementById('fmsg').value.trim();
+    if(!n||!e||!t||!m){alert('Please fill in all fields.');return;}
+    document.getElementById('contactForm').style.display='none';
+    document.getElementById('successMsg').style.display='block';
+  }
+
+  function openModal(title, badge, role, desc, year, runtime) {
+    document.getElementById('m-title').textContent = title;
+    document.getElementById('m-badge').textContent = badge;
+    document.getElementById('m-role').textContent = role;
+    document.getElementById('m-desc').textContent = desc;
+    document.getElementById('m-year').textContent = year;
+    document.getElementById('m-runtime').textContent = runtime;
+    document.getElementById('projectModal').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+
+  function openFilmModal(title, genre, role, desc, year, runtime, credit) {
+    document.getElementById('fm-title').textContent = title;
+    document.getElementById('fm-genre').textContent = genre;
+    document.getElementById('fm-role').textContent = role;
+    document.getElementById('fm-desc').textContent = desc;
+    document.getElementById('fm-year').textContent = year;
+    document.getElementById('fm-runtime').textContent = runtime;
+    document.getElementById('fm-credit').textContent = credit;
+    document.getElementById('filmModal').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow='';
+  }
+
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape'){closeModal('projectModal');closeModal('filmModal');}
+  });
+</script>
+</body>
+</html>
